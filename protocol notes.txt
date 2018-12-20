@@ -1,0 +1,21 @@
+Pi Protocol
+
+JSON{
+T0:data,T1:data}
+T=Type
+0=address
+
+Types
+CAP = Output
+lower = input
+
+k = read temperature address = i2c
+p = pressure
+w = windspeed
+
+C = Write Contact
+c = Read contact 
+R = Red
+G = Green
+B = Blue
+
