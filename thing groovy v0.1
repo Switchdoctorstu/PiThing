@@ -1,6 +1,7 @@
 /**
- *  This copyright came in from the tool so figured i should keep it
- *  Copyright 2015 SmartThings
+ *  My Pi Handler
+ *
+ *  Copyright 2018 stuart oldfield
  *
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  *  in compliance with the License. You may obtain a copy of the License at:
@@ -13,24 +14,24 @@
  *
  */
 metadata {
-    //
-	definition (name: "Raspberry Pi Interface Controller V1", namespace: "stu.NAME.SPACE", author: "Stuart Oldfield") {
-		capability "Actuator"
+	definition (name: "My Pi Handler", namespace: "Switchdoctorstu", author: "stuart oldfield") {
 		capability "Switch"
-		capability "Sensor"
-
-		command "red"
+        command "red"
 		command "blue"
 		command "green"
+        command "yellow"
 	}
 
-    // when setting up your device via the smartthings app, these preference settings are available
+// when setting up your device via the smartthings app, these preference settings are available
     preferences {
         // the LAN IP address and port for the server for example: 192.168.0.37:8080
         input("host", "string", title:"Host", description: "The IP address and port of the Raspberry Pi.", required: true, displayDuringSetup: true)
 	}
 
-    // these are the tiles displayed in the smartthings app when you setup this device
+	simulator {
+		// TODO: define status and reply messages here
+	}
+
 	tiles(scale:2) {
 		multiAttributeTile(name:"controllerstatus", type: "generic", width: 6, height: 4) {
 			tileAttribute ("device.status", key: "PRIMARY_CONTROL") {
@@ -46,20 +47,51 @@ metadata {
 		standardTile("green", "device.button", width: 2, height: 2) {
 			state "default", label: "Green", backgroundColor: "#ffffff", action: "green", icon:""
 		}
+        standardTile("yellow", "device.button", width: 2, height: 2) {
+			state "default", label: "Yellow", backgroundColor: "#ffffff", action: "yellow", icon:""
+		}
 		
-		details(["controllerstatus","red","blue","green"])
+		details(["controllerstatus","red","blue","green","yellow"])
 	}
 }
 
-// 
+// parse events into attributes
+def parse(String description) {
+	log.debug "Parsing '${description}'"
+	// TODO: handle 'switch' attribute
+
+}
+
+// handle commands
+def on() {
+	log.debug "Executing 'on'"
+	// TODO: handle 'on' command
+    def cmds = []
+	cmds << http_command("/pi/thing?on")
+    log.debug cmds
+	// sendEvent(name: "on", value: "pushed", data: [buttonNumber: "1"], descriptionText: "$device.displayName on button was pushed", isStateChange: true)
+	return cmds
+}
+
+def off() {
+	log.debug "Executing 'off'"
+	// TODO: handle 'off' command
+    def cmds = []
+	cmds << http_command("/pi/thing?off")
+    log.debug cmds
+	// sendEvent(name: "off", value: "pushed", data: [buttonNumber: "3"], descriptionText: "$device.displayName off button was pushed", isStateChange: true)
+	return cmds
+}
+
 def getHostAddress() {    
-	return "${host}"
+	return "192.168.0.37:8080"
+	// return "${host}"
 }
 
 //
 def red() {
 	def cmds = []
-	cmds << http_command("/pi/thing/red")
+	cmds << http_command("/pi/thing?red")
     log.debug cmds
 	sendEvent(name: "red", value: "pushed", data: [buttonNumber: "1"], descriptionText: "$device.displayName red button was pushed", isStateChange: true)
     return cmds
@@ -68,7 +100,7 @@ def red() {
 //
 def blue() {
    	def cmds = []
-	cmds << http_command("/pi/thing/blue")
+	cmds << http_command("/pi/thing?blue")
     log.debug cmds
 	sendEvent(name: "blue", value: "pushed", data: [buttonNumber: "2"], descriptionText: "$device.displayName blue button was pushed", isStateChange: true)
 	return cmds
@@ -77,9 +109,17 @@ def blue() {
 //
 def green() {
    	def cmds = []
-	cmds << http_command("/pi/thing/green")
+	cmds << http_command("/pi/thing?green")
     log.debug cmds
 	sendEvent(name: "green", value: "pushed", data: [buttonNumber: "3"], descriptionText: "$device.displayName green button was pushed", isStateChange: true)
+	return cmds
+}
+//
+def yellow() {
+   	def cmds = []
+	cmds << http_command("/pi/thing?yellow")
+    log.debug cmds
+	sendEvent(name: "yellow", value: "pushed", data: [buttonNumber: "4"], descriptionText: "$device.displayName yellow button was pushed", isStateChange: true)
 	return cmds
 }
 
